@@ -1,0 +1,13 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///payday.db'
+app.secret_key = "flask rocks!"
+
+db = SQLAlchemy(app)
+
+"""
+export FLASK_APP=main.py
+flask run
+"""

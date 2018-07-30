@@ -1,0 +1,36 @@
+<doctype html>
+
+<a href="{{ url_for('.index') }}"> Home </a>
+
+<title>Spends</title>
+<h2>New spend</h2>
+
+
+{% if form %}
+	{% from "_formhelpers.html" import render_field %}
+	<form method=post>
+	    <dl>
+	        {{ render_field(form.date) }}
+	        {{ render_field(form.value) }}
+	        {{ render_field(form.item) }}
+	    </dl>
+	    <p><input type=submit value=Submit>
+	</form>
+{% else %}
+    <p>there are no spends here</p>
+{% endif %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+	<h3>Spends List:</h3>
+
+	 {{ spendsTable }}

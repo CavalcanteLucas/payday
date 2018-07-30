@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<!-- Meta, title, CSS, favicons, etc. -->
+	<link rel="shortcut icon" href="#" />
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+	<title>PayDay </title>
+
+	<link href="{{ url_for('static', filename='vendors/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+
+	<link href="{{ url_for('static', filename='vendors/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
+
+
+	<link href="{{ url_for('static', filename='build/css/custom.css') }}" rel="stylesheet">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js" id="charts_js"></script>
+
+</head>
+
+
+
+<body class="{% block body_class %}nav-md {% endblock body_class %}">
+	<div class="container body">
+		<div class="main_container">
+
+			<div class="right_col" role="main">
+
+
+				<h2>PayDay</h2>
+
+				<p><a href="{{ url_for('.res') }}"> Reservations </a></p>
+
+				<p><a href="{{ url_for('.spe') }}"> Spends </a></p>
+
+
+
+
+
+				<table id="table" class="table table-striped jambo_table bulk_action" border="4" frame="hsides" rules="groups">
+					<caption>PayMonth Table</caption>
+					<colgroup span="1"></colgroup>
+					<colgroup span="5"></colgroup>
+					<colgroup span="1"></colgroup>
+					<colgroup span="1"></colgroup>
+					<thead>
+						<tr class="headings">
+							<th class="column-title">Date</th>
+							<th class="column-title">Q1</th>
+							<th class="column-title">Q2</th>
+							<th class="column-title">Q3</th>
+							<th class="column-title">Q4</th>
+							<th class="column-title">Q5</th>
+							<th class="column-title">Gains</th>
+							<th class="column-title">Spends</th>
+							<th class="column-title">Balance</th>
+						</tr> 
+					</thead>
+					<tbody>
+						{% for line in pm_Table %}
+						<tr>
+							<td>{{ line.0.year }}-{{ line.0.strftime('%b') }}</td>
+							<td>{{ '{0:.2f}'.format(line.1) }}</td>
+							<td>{{ '{0:.2f}'.format(line.2) }}</td>
+							<td>{{ '{0:.2f}'.format(line.3) }}</td>
+							<td>{{ '{0:.2f}'.format(line.4) }}</td>
+							<td>{{ '{0:.2f}'.format(line.5) }}</td>
+							<td>{{ '{0:.2f}'.format(line.6) }}</td>
+							<td>{{ '{0:.2f}'.format(line.7) }}</td>
+							{% if line.6 - line.7 > 0 %}
+							<td><font color="green">{{ '{0:.2f}'.format(line.6 - line.7) }}</font></td>
+							{% elif line.6 - line.7 < 0 %}
+							<td><font color="red">{{ '{0:.2f}'.format(line.6 - line.7) }}</font></td>
+							{% else %}  
+							<td>{{ '{0:.2f}'.format(line.6 - line.7) }}</td>
+							{% endif %}
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+
+
+				<p><strong>Total Balance: </strong>
+					{% if total_balance > 0 %}
+					<td><font color="green">{{ '{0:.2f}'.format(total_balance) }}</font></td>
+					{% elif total_balance < 0 %}
+					<td><font color="red">{{ '{0:.2f}'.format(total_balance) }}</font></td>
+					{% else %}  
+					<td>{{ '{0:.2f}'.format(total_balance) }}</td>
+					{% endif %}
+				</p>
+
+
+
+
+
+
+
+
+				<div class="clearfix"></div>
+
+				<div class="row">
+				<div class="col-md-12 col-sm-6 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>Pay Day<small>Sessions</small></h2>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+									</li>
+									<li class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">Settings 1</a>
+											</li>
+											<li><a href="#">Settings 2</a>
+											</li>
+										</ul>
+									</li>
+									<li><a class="close-link"><i class="fa fa-close"></i></a>
+									</li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<canvas id="PayDayChart"></canvas>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-12 col-sm-6 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>Net Balance<small>Sessions</small></h2>
+								<ul class="nav navbar-right panel_toolbox">
+									<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+									</li>
+									<li class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a href="#">Settings 1</a>
+											</li>
+											<li><a href="#">Settings 2</a>
+											</li>
+										</ul>
+									</li>
+									<li><a class="close-link"><i class="fa fa-close"></i></a>
+									</li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content">
+								<canvas id="BalanceChart"></canvas>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+	var ctx = document.getElementById("PayDayChart");
+
+	var months = {{ year_month_List|tojson }}
+	var gains = {{ gain_List|tojson }}
+	var spends = {{ spend_List|tojson }}
+	var balance = {{ balance_List|tojson }}
+
+	var data = {
+		labels: months,
+		datasets: [
+		{
+			label: "Gains",
+			fill: true,
+			lineTension: 0.4,
+			backgroundColor: "rgba(75,192,10,0.4)",
+			borderColor: "rgba(75,192,1,1)",
+			borderCapStyle: 'butt',
+			borderDash: [],
+			borderDashOffset: 0.0,
+			borderJoinStyle: 'miter',
+			pointBorderColor: "rgba(75,192,192,1)",
+			pointBackgroundColor: "#fff",
+			pointBorderWidth: 1,
+			pointHoverRadius: 5,
+			pointHoverBackgroundColor: "rgba(75,192,192,1)",
+			pointHoverBorderColor: "rgba(220,220,220,1)",
+			pointHoverBorderWidth: 2,
+			pointRadius: 3,
+			pointHitRadius: 10,
+			data: gains,
+		},{
+			label: "Spends",
+			fill: true,
+			lineTension: 0.4,
+			backgroundColor: "rgba(190,10,10,0.4)",
+			borderColor: "rgba(200,1,1,1)",
+			borderCapStyle: 'butt',
+			borderDash: [],
+			borderDashOffset: 0.0,
+			borderJoinStyle: 'miter',
+			pointBorderColor: "rgba(75,192,192,1)",
+			pointBackgroundColor: "#fff",
+			pointBorderWidth: 1,
+			pointHoverRadius: 5,
+			pointHoverBackgroundColor: "rgba(75,192,192,1)",
+			pointHoverBorderColor: "rgba(220,220,220,1)",
+			pointHoverBorderWidth: 2,
+			pointRadius: 3,
+			pointHitRadius: 10,
+			data: spends,
+		},{
+			label: "Monthly Balance",
+			fill: true,
+			lineTension: 0.4,
+			backgroundColor: "rgba(75,1,192,0.1)",
+			borderColor: "rgba(75,1,192,1)",
+			borderCapStyle: 'butt',
+			borderDash: [],
+			borderDashOffset: 0.0,
+			borderJoinStyle: 'miter',
+			pointBorderColor: "rgba(75,192,192,1)",
+			pointBackgroundColor: "#fff",
+			pointBorderWidth: 1,
+			pointHoverRadius: 5,
+			pointHoverBackgroundColor: "rgba(75,192,192,1)",
+			pointHoverBorderColor: "rgba(220,220,220,1)",
+			pointHoverBorderWidth: 2,
+			pointRadius: 3,
+			pointHitRadius: 10,
+			data: balance,
+		}
+		]
+	};
+
+	var PayDayChart = new Chart(ctx, {
+		type: 'line',
+		data: data,
+		options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero:true,
+						stacked: true
+					}
+				}],
+				xAxes: [{}]
+			}
+		}
+	});
+</script>
+
+
+<script>
+	var ctx = document.getElementById("BalanceChart");
+
+	var months = {{ year_month_List|tojson }}
+	var balanceCum = {{ balanceCum_List|tojson }}
+
+	var data = {
+		labels: months,
+		datasets: [
+		{
+			label: "Net Balance",
+			fill: true,
+			lineTension: 0.4,
+			backgroundColor: "rgba(75,1,192,0.4)",
+			borderColor: "rgba(75,10,192,1)",
+			borderCapStyle: 'butt',
+			borderDash: [],
+			borderDashOffset: 0.0,
+			borderJoinStyle: 'miter',
+			pointBorderColor: "rgba(75,192,192,1)",
+			pointBackgroundColor: "#fff",
+			pointBorderWidth: 1,
+			pointHoverRadius: 5,
+			pointHoverBackgroundColor: "rgba(75,192,192,1)",
+			pointHoverBorderColor: "rgba(220,220,220,1)",
+			pointHoverBorderWidth: 2,
+			pointRadius: 3,
+			pointHitRadius: 10,
+			data: balanceCum,
+		}
+		]
+	};
+
+	var BalanceChart = new Chart(ctx, {
+		type: 'line',
+		data: data,
+		options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero:true,
+						stacked: true
+					}
+				}],
+				xAxes: [{}]
+			}
+		}
+	});
+</script>
+
+</body>
+</html>
+
+

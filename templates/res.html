@@ -1,0 +1,38 @@
+<doctype html>
+
+<a href="{{ url_for('.index') }}"> Home </a>
+
+<title>Reservations</title>
+<h2>New reservation</h2>
+
+
+{% if form %}
+	{% from "_formhelpers.html" import render_field %}
+	<form method=post>
+	    <dl>
+	        {{ render_field(form.room) }}
+	        {{ render_field(form.checkin) }}
+	        {{ render_field(form.checkout) }}
+	        {{ render_field(form.value) }}
+	        {{ render_field(form.client) }}
+	    </dl>
+	    <p><input type=submit value=Submit>
+	</form>
+{% else %}
+    <p>there are no reservations here</p>
+{% endif %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+	<h3>Reservation List:</h3>
+
+	 {{ reservationsTable }}

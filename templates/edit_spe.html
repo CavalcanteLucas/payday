@@ -1,0 +1,13 @@
+<doctype html>
+<title>Edit spend</title>
+<h2>Edit spend</h2>
+
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <dl>
+        {{ render_field(form.date) }}
+        {{ render_field(form.value) }}
+        {{ render_field(form.item) }}
+    </dl>
+    <p><input type=submit value=Submit>
+</form>

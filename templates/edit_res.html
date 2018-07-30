@@ -1,0 +1,15 @@
+<doctype html>
+<title>Edit reservation</title>
+<h2>Edit reservation</h2>
+
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <dl>
+        {{ render_field(form.room) }}
+        {{ render_field(form.checkin) }}
+        {{ render_field(form.checkout) }}
+        {{ render_field(form.value) }}
+        {{ render_field(form.client) }}
+    </dl>
+    <p><input type=submit value=Submit>
+</form>
