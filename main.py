@@ -4,6 +4,7 @@ from forms import ReservationForm, SpendForm
 from flask import flash, render_template, request, redirect
 from models import Reservation, Spend
 from tables import ReservationsTable, SpendsTable
+import os
 
 from utils import *
 
