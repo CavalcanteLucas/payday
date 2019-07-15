@@ -173,9 +173,6 @@ def save_spe(spend, form, new=False):
 
 	db_session.commit()
 
-if __name__ == '__main__':
-	app.run()
-
 @app.route('/spe/<int:id>', methods=['GET','POST'])
 def edit_spe(id):
 	qry = db_session.query(Spend).filter(Spend.id==id)
