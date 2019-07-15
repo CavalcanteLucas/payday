@@ -88,7 +88,8 @@ def save_res(reservation, form, new=False):
 	db_session.commit()
 
 if __name__ == '__main__':
-	app.run()
+	port = int(os.environ.get('PORT', 5000))
+	app.run(host='0.0.0.0', port=port)
 
 @app.route('/res', methods=['GET','POST'])
 def res():
